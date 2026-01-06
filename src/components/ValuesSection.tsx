@@ -1,4 +1,5 @@
 import { Blocks, Gauge, Heart, MessageSquare } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const values = [
   {
@@ -27,11 +28,41 @@ const values = [
   },
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 40, rotateX: -10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    rotateX: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
+    },
+  },
+};
+
 const ValuesSection = () => {
   return (
-    <section id="values" className="py-24 lg:py-32 gradient-subtle">
+    <section id="values" className="py-24 lg:py-32 gradient-subtle overflow-hidden">
       <div className="container mx-auto px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-16">
+        <motion.div
+          className="text-center max-w-2xl mx-auto mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
           <span className="text-primary font-semibold text-sm uppercase tracking-wider">
             What I Care About
           </span>
@@ -42,22 +73,40 @@ const ValuesSection = () => {
             The principles that guide my work and ensure quality in every project I
             undertake.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <motion.div
+          className="grid md:grid-cols-2 gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+        >
           {values.map((value, index) => (
-            <div
+            <motion.div
               key={value.title}
-              className="group relative bg-card rounded-2xl border border-border p-8 hover-lift overflow-hidden"
+              variants={cardVariants}
+              className="group relative bg-card rounded-2xl border border-border p-8 hover-lift hover-glow overflow-hidden cursor-default"
+              whileHover={{ scale: 1.02, y: -5 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
               {/* Background gradient on hover */}
-              <div className="absolute inset-0 gradient-primary opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
+              <motion.div
+                className="absolute inset-0 gradient-primary"
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 0.05 }}
+                transition={{ duration: 0.3 }}
+              />
 
               <div className="relative">
-                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <motion.div
+                  className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
                   <value.icon className="w-7 h-7 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold text-foreground mb-3">
+                </motion.div>
+                <h3 className="text-xl font-semibold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
                   {value.title}
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
@@ -65,13 +114,33 @@ const ValuesSection = () => {
                 </p>
               </div>
 
-              {/* Decorative number */}
-              <span className="absolute top-4 right-4 text-6xl font-bold text-muted/20">
+              {/* Decorative number with animation */}
+              <motion.span
+                className="absolute top-4 right-4 text-6xl font-bold text-muted/10 select-none"
+                initial={{ opacity: 0, scale: 0.5 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
+              >
                 {String(index + 1).padStart(2, '0')}
-              </span>
-            </div>
+              </motion.span>
+
+              {/* Corner decoration */}
+              <motion.div
+                className="absolute -bottom-10 -right-10 w-32 h-32 rounded-full bg-primary/5"
+                animate={{
+                  scale: [1, 1.1, 1],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: index * 0.5,
+                }}
+              />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
